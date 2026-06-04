@@ -4,14 +4,14 @@
 		logo = 'https://image.flaticon.com/icons/svg/497/497348.svg',
 		heading = 'Find your greeny stuff for your room',
 		highlight = 'greeny',
-		description = `
-      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+		description = `Lorem ipsum dolor sit amet consectetur adipisicing elit.
       Recusandae maiores neque eaque ea odit placeat, tenetur illum
       distinctio nulla voluptatum a corrupti beatae tempora aperiam
-      quia id aliquam possimus aut.
-    `,
+      quia id aliquam possimus aut.`,
 		ctaText = 'Learn More',
-		image = 'https://images.unsplash.com/photo-1536147116438-62679a5e01f2?auto=format&fit=crop&w=634&q=80'
+		image = 'https://images.unsplash.com/photo-1536147116438-62679a5e01f2?auto=format&fit=crop&w=634&q=80',
+		imageAlt = 'Product showcase',
+		onCta = () => {}
 	}: {
 		title?: string;
 		logo?: string;
@@ -20,7 +20,13 @@
 		description?: string;
 		ctaText?: string;
 		image?: string;
+		imageAlt?: string;
+		onCta?: () => void;
 	} = $props();
+
+	const parts = $derived(highlight && heading.includes(highlight)
+		? heading.split(highlight)
+		: [heading, '']);
 </script>
 
 <div class="flex flex-wrap">
@@ -32,9 +38,8 @@
 				<div class="text-4xl font-bold">
 					{title}<span class="text-accent/70">.</span>
 				</div>
-
 				<div>
-					<img src={logo} alt="Logo" class="w-8" />
+					<img src={logo} alt="{title} logo" class="w-8" />
 				</div>
 			</nav>
 
@@ -42,20 +47,25 @@
 			<header class="container px-4 lg:flex mt-10 items-center h-full lg:mt-0">
 				<div class="w-full">
 					<h1 class="text-4xl lg:text-6xl font-bold">
-						{heading.replace(highlight, '')}
-						<span class="text-accent/85">{highlight}</span>
+						{#if parts[1] !== ''}
+							{parts[0]}<span class="text-accent/85">{highlight}</span>{parts[1]}
+						{:else}
+							{heading}
+						{/if}
 					</h1>
 
 					<div class="w-20 h-2 bg-accent/70 my-4"></div>
 
 					<p class="text-xl mb-10">{description}</p>
 
-					<button class="btn btn-primary">{ctaText}</button>
+					<button type="button" class="btn btn-primary" onclick={onCta}>
+						{ctaText}
+					</button>
 				</div>
 			</header>
 		</div>
 	</div>
 
 	<!-- RIGHT SIDE IMAGE -->
-	<img src={image} alt="Landing" class="w-full h-48 object-cover sm:h-screen sm:w-4/12" />
+	<img src={image} alt={imageAlt} class="w-full h-48 object-cover sm:h-screen sm:w-4/12" />
 </div>
