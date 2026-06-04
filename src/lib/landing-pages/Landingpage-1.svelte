@@ -11,7 +11,7 @@
 		ctaText = 'Learn More',
 		image = 'https://images.unsplash.com/photo-1536147116438-62679a5e01f2?auto=format&fit=crop&w=634&q=80',
 		imageAlt = 'Product showcase',
-		onCta = () => {}
+		onCta
 	}: {
 		title?: string;
 		logo?: string;
@@ -21,7 +21,7 @@
 		ctaText?: string;
 		image?: string;
 		imageAlt?: string;
-		onCta?: () => void;
+		onCta?: (msg:string) => void;
 	} = $props();
 
 	const parts = $derived(highlight && heading.includes(highlight)
@@ -58,7 +58,7 @@
 
 					<p class="text-xl mb-10">{description}</p>
 
-					<button type="button" class="btn btn-primary" onclick={onCta}>
+					<button type="button" class="btn btn-primary" onclick={()=>onCta?.("Hello from Landingpage-1!")}>
 						{ctaText}
 					</button>
 				</div>
