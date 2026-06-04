@@ -11,7 +11,9 @@
 </script>
 
 <!-- Demo switcher -->
-<nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-black/5">
+<nav
+	class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-black/5"
+>
 	{#each layouts as { id, label } (id)}
 		<button
 			type="button"

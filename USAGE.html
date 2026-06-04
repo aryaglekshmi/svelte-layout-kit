@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@aryagg/svelte-layout-kit — Usage Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --bg-card:   #181c27;
+      --bg-code:   #0d1017;
+      --border:    #272d3d;
+      --accent:    #6c8aff;
+      --accent-2:  #a78bfa;
+      --success:   #34d399;
+      --warn:      #fbbf24;
+      --text-1:    #e8eaf6;
+      --text-2:    #9ba3bf;
+      --text-3:    #5c6480;
+      --tag-bg:    rgba(108,138,255,.12);
+      --tag-text:  #a5b4fc;
+      --radius:    12px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    /* ── Layout ── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      width: 240px; flex-shrink: 0;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .sidebar-logo {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .sidebar-logo .pkg { font-size: 11px; color: var(--text-3); font-family: 'Fira Code', monospace; }
+    .sidebar-logo .name { font-size: 15px; font-weight: 700; color: var(--text-1); }
+    .sidebar-logo .version {
+      display: inline-block; margin-top: 6px;
+      background: var(--tag-bg); color: var(--tag-text);
+      font-size: 11px; font-family: 'Fira Code', monospace;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .sidebar a {
+      display: block; padding: 7px 20px; text-decoration: none;
+      font-size: 13px; font-weight: 500; color: var(--text-2);
+      border-left: 2px solid transparent;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .sidebar a:hover { color: var(--text-1); background: rgba(255,255,255,.04); }
+    .sidebar a.active { color: var(--accent); border-color: var(--accent); background: var(--tag-bg); }
+    .sidebar-group { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); padding: 16px 20px 4px; }
+
+    /* Main */
+    main { flex: 1; min-width: 0; padding: 60px clamp(20px, 4vw, 80px) 120px; max-width: 860px; }
+
+    /* ── Typography ── */
+    h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -.5px; line-height: 1.2; }
+    h2 { font-size: 22px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 16px; font-weight: 600; margin-top: 36px; margin-bottom: 10px; color: var(--text-1); }
+    p  { color: var(--text-2); margin-bottom: 14px; }
+    a  { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Hero */
+    .hero { margin-bottom: 56px; }
+    .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 20px; }
+    .badge {
+      font-size: 11px; font-family: 'Fira Code', monospace; font-weight: 500;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid;
+    }
+    .badge-blue  { background: rgba(108,138,255,.1); color: #a5b4fc; border-color: rgba(108,138,255,.3); }
+    .badge-green { background: rgba(52,211,153,.1);  color: #6ee7b7; border-color: rgba(52,211,153,.3); }
+    .badge-purple{ background: rgba(167,139,250,.1); color: #c4b5fd; border-color: rgba(167,139,250,.3); }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 24px; margin: 24px 0; }
+    .step {
+      display: grid; grid-template-columns: 36px 1fr; gap: 16px; align-items: start;
+    }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--tag-bg); border: 1px solid rgba(108,138,255,.3);
+      color: var(--accent); font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .step-body { padding-top: 6px; }
+    .step-body strong { display: block; font-size: 15px; margin-bottom: 6px; color: var(--text-1); }
+
+    /* Code blocks */
+    .code-wrap { position: relative; margin: 12px 0; }
+    .code-label {
+      position: absolute; top: -1px; right: 12px;
+      font-size: 10px; font-family: 'Fira Code', monospace; font-weight: 500;
+      color: var(--text-3); background: var(--bg-code);
+      padding: 2px 8px; border-radius: 0 0 6px 6px;
+      border: 1px solid var(--border); border-top: none;
+    }
+    pre {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      overflow-x: auto; font-family: 'Fira Code', monospace;
+      font-size: 13px; line-height: 1.8;
+    }
+    code { font-family: 'Fira Code', monospace; font-size: 13px; }
+    p code, li code {
+      background: rgba(108,138,255,.1); color: var(--tag-text);
+      padding: 1px 6px; border-radius: 4px; font-size: 12.5px;
+    }
+
+    /* Syntax colours */
+    .k  { color: #c084fc; }   /* keyword / import */
+    .s  { color: #86efac; }   /* string */
+    .c  { color: #5c6480; font-style: italic; } /* comment */
+    .p  { color: var(--accent); } /* prop name */
+    .v  { color: #f9a8d4; }   /* value / variable */
+    .t  { color: #67e8f9; }   /* tag / component */
+    .o  { color: var(--text-2); } /* operator / punctuation */
+    .n  { color: #fbbf24; }   /* number / special */
+
+    /* Props table */
+    .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead tr { background: rgba(255,255,255,.03); }
+    th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); border-bottom: 1px solid var(--border); }
+    td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.02); }
+    td.prop-name { color: var(--accent); font-family: 'Fira Code', monospace; font-size: 12.5px; white-space: nowrap; }
+    td.prop-type { color: var(--accent-2); font-family: 'Fira Code', monospace; font-size: 12px; white-space: nowrap; }
+    td.prop-default { color: var(--success); font-family: 'Fira Code', monospace; font-size: 12px; }
+
+    /* Component card */
+    .comp-header {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; margin: 24px 0 16px;
+    }
+    .comp-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .comp-meta .comp-name { font-size: 17px; font-weight: 700; color: var(--text-1); }
+    .comp-meta .comp-desc { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+    /* Callout */
+    .callout {
+      display: flex; gap: 14px; align-items: flex-start;
+      border-radius: var(--radius-sm); padding: 14px 16px; margin: 20px 0;
+      border-left: 3px solid;
+    }
+    .callout.info  { background: rgba(108,138,255,.07); border-color: var(--accent); }
+    .callout.warn  { background: rgba(251,191,36,.07);  border-color: var(--warn); }
+    .callout.tip   { background: rgba(52,211,153,.07);  border-color: var(--success); }
+    .callout-icon  { font-size: 18px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+    .callout p { margin: 0; font-size: 13.5px; }
+    .callout.info p  { color: #c7d2fe; }
+    .callout.warn p  { color: #fde68a; }
+    .callout.tip  p  { color: #a7f3d0; }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      main { padding: 32px 20px 80px; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="pkg">@aryagg/</div>
+      <div class="name">svelte-layout-kit</div>
+      <span class="version">v0.0.1</span>
+    </div>
+
+    <div class="sidebar-group">Getting Started</div>
+    <a href="#install">Installation</a>
+    <a href="#tailwind">Tailwind Setup</a>
+    <a href="#import">Importing</a>
+
+    <div class="sidebar-group">Components</div>
+    <a href="#lp1">LandingPage1</a>
+    <a href="#lp2">LandingPage2</a>
+    <a href="#lp3">LandingPage3</a>
+
+    <div class="sidebar-group">Reference</div>
+    <a href="#theming">Theming</a>
+    <a href="#full-example">Full Example</a>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badges">
+        <span class="badge badge-blue">SvelteKit 5</span>
+        <span class="badge badge-green">Tailwind v4</span>
+        <span class="badge badge-purple">TypeScript</span>
+      </div>
+      <h1>svelte-layout-kit</h1>
+      <p style="font-size:17px; margin-top:12px;">
+        A collection of ready-to-use, fully-customisable landing page layouts for SvelteKit apps. Drop in a component, pass your props, done.
+      </p>
+    </section>
+
+    <!-- ── Install ── -->
+    <h2 id="install">Installation</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Install the package</strong>
+          <p>Install from npm or link the local package:</p>
+          <div class="code-wrap">
+            <span class="code-label">terminal</span>
+            <pre><span class="c"># npm (once published)</span>
+npm install @aryagg/svelte-layout-kit
+
+<span class="c"># or link a local sibling folder</span>
+npm install ../svelte-layout-kit</pre>
+          </div>
+          <p>Your <code>package.json</code> dependency entry:</p>
+          <div class="code-wrap">
+            <span class="code-label">package.json</span>
+            <pre><span class="o">{</span>
+  <span class="s">"dependencies"</span><span class="o">: {</span>
+    <span class="s">"@aryagg/svelte-layout-kit"</span><span class="o">:</span> <span class="s">"^0.0.1"</span>
+  <span class="o">}</span>
+<span class="o">}</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Verify peer dependencies</strong>
+          <p>The package requires <code>svelte ^5.0.0</code> as a peer dependency — already satisfied by any SvelteKit 2+ project using Svelte 5.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Tailwind ── -->
+    <h2 id="tailwind">Tailwind CSS Setup</h2>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Required step.</strong> Tailwind v4 excludes <code>node_modules</code> from scanning by default. Without this fix, responsive classes like <code>sm:w-8/12</code> from the package will be missing in your build.</p>
+    </div>
+
+    <p>Add a <code>@source</code> directive to your global CSS file (the one that imports Tailwind). The path must be relative to that CSS file.</p>
+
+    <div class="code-wrap">
+      <span class="code-label">src/lib/styles/index.css</span>
+      <pre><span class="c">/* ① Import Tailwind (v4 syntax) */</span>
+<span class="k">@import</span> <span class="s">"tailwindcss"</span><span class="o">;</span>
+<span class="k">@config</span> <span class="s">"./tailwind.config.ts"</span><span class="o">;</span>
+
+<span class="c">/* ② Opt the package into Tailwind's scanner
+   — node_modules is excluded by default in v4, @source bypasses that */</span>
+<span class="k">@source</span> <span class="s">"../../../node_modules/@aryagg/svelte-layout-kit/dist"</span><span class="o">;</span></pre>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <p>Adjust the relative path if your CSS file is in a different location. Count the folder levels up from your CSS file to the project root, then append <code>node_modules/@aryagg/svelte-layout-kit/dist</code>.</p>
+    </div>
+
+    <p>The <code>dist/</code> folder is what ships with the package and contains the pre-compiled <code>.svelte</code> files Tailwind needs to extract class names from.</p>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>The components use your app's Tailwind theme tokens such as <code>text-accent</code>, <code>bg-surface-secondary</code>, <code>btn-primary</code>, etc. Make sure those CSS variables are defined in your theme before rendering the components.</p>
+    </div>
+
+    <!-- ── Import ── -->
+    <h2 id="import">Importing Components</h2>
+
+    <p>All three landing page components are exported from the package root. Import only what you need:</p>
+
+    <div class="code-wrap">
+      <span class="code-label">+page.svelte</span>
+      <pre><span class="k">import</span> <span class="o">{</span> <span class="v">LandingPage1</span><span class="o">,</span> <span class="v">LandingPage2</span><span class="o">,</span> <span class="v">LandingPage3</span> <span class="o">}</span> <span class="k">from</span> <span class="s">'@aryagg/svelte-layout-kit'</span><span class="o">;</span></pre>
+    </div>
+
+    <!-- ── LandingPage1 ── -->
+    <h2 id="lp1">LandingPage1</h2>
+
+    <div class="comp-header">
+      <div class="comp-icon" style="background:rgba(108,138,255,.15);">🛍️</div>
+      <div class="comp-meta">
+        <div class="comp-name">LandingPage1</div>
+        <div class="comp-desc">Split-screen product / brand layout — hero text left, full-height image right.</div>
+      </div>
+    </div>
+
+    <h3>Props</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">title</td><td class="prop-type">string</td><td class="prop-default">'Greeny'</td><td>Brand name shown in the nav bar.</td></tr>
+          <tr><td class="prop-name">logo</td><td class="prop-type">string</td><td class="prop-default">flaticon URL</td><td>Logo image URL rendered in the nav.</td></tr>
+          <tr><td class="prop-name">heading</td><td class="prop-type">string</td><td class="prop-default">'Find your greeny…'</td><td>Main H1 hero headline.</td></tr>
+          <tr><td class="prop-name">highlight</td><td class="prop-type">string</td><td class="prop-default">'greeny'</td><td>Substring of <code>heading</code> to colour with <code>text-accent</code>.</td></tr>
+          <tr><td class="prop-name">description</td><td class="prop-type">string</td><td class="prop-default">Lorem ipsum…</td><td>Body paragraph below the headline.</td></tr>
+          <tr><td class="prop-name">ctaText</td><td class="prop-type">string</td><td class="prop-default">'Learn More'</td><td>Label for the primary CTA button.</td></tr>
+          <tr><td class="prop-name">image</td><td class="prop-type">string</td><td class="prop-default">Unsplash URL</td><td>Right-side full-height image URL.</td></tr>
+          <tr><td class="prop-name">imageAlt</td><td class="prop-type">string</td><td class="prop-default">'Product showcase'</td><td>Alt text for the image.</td></tr>
+          <tr><td class="prop-name">onCta</td><td class="prop-type">() =&gt; void</td><td class="prop-default">() =&gt; {}</td><td>Callback fired when the CTA button is clicked.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Default usage</h3>
+    <div class="code-wrap">
+      <span class="code-label">+page.svelte</span>
+      <pre><span class="k">import</span> <span class="o">{</span> <span class="v">LandingPage1</span> <span class="o">}</span> <span class="k">from</span> <span class="s">'@aryagg/svelte-layout-kit'</span><span class="o">;</span>
+</pre>
+    </div>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="c">&lt;!-- Renders with built-in placeholder content --&gt;</span>
+<span class="t">&lt;LandingPage1</span> <span class="t">/&gt;</span></pre>
+    </div>
+
+    <h3>With custom props</h3>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="t">&lt;LandingPage1</span>
+  <span class="p">title</span><span class="o">=</span><span class="s">"Nordic Home"</span>
+  <span class="p">logo</span><span class="o">=</span><span class="s">"/logo.svg"</span>
+  <span class="p">heading</span><span class="o">=</span><span class="s">"Design your space with modern simplicity"</span>
+  <span class="p">highlight</span><span class="o">=</span><span class="s">"modern"</span>
+  <span class="p">description</span><span class="o">=</span><span class="s">"Minimalist furniture designed to elevate your home."</span>
+  <span class="p">ctaText</span><span class="o">=</span><span class="s">"Shop Now"</span>
+  <span class="p">image</span><span class="o">=</span><span class="s">"https://images.unsplash.com/photo-1493666438817-866a91353ca9?w=900"</span>
+  <span class="p">imageAlt</span><span class="o">=</span><span class="s">"Modern interior"</span>
+  <span class="p">onCta</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">goto</span><span class="o">(</span><span class="s">'/shop'</span><span class="o">)}</span>
+<span class="t">/&gt;</span></pre>
+    </div>
+
+    <!-- ── LandingPage2 ── -->
+    <h2 id="lp2">LandingPage2</h2>
+
+    <div class="comp-header">
+      <div class="comp-icon" style="background:rgba(52,211,153,.12);">🏠</div>
+      <div class="comp-meta">
+        <div class="comp-name">LandingPage2</div>
+        <div class="comp-desc">Full-screen background image hero with a centred search form — ideal for real estate, travel, or directory sites.</div>
+      </div>
+    </div>
+
+    <h3>Props</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">title</td><td class="prop-type">string</td><td class="prop-default">'Discover Your New Home'</td><td>Headline overlaid on the background image.</td></tr>
+          <tr><td class="prop-name">backgroundImage</td><td class="prop-type">string</td><td class="prop-default">Unsplash URL</td><td>Full-screen background image URL.</td></tr>
+          <tr><td class="prop-name">placeholder</td><td class="prop-type">string</td><td class="prop-default">'City, address, or ZIP'</td><td>Placeholder text for the search input.</td></tr>
+          <tr><td class="prop-name">buttonText</td><td class="prop-type">string</td><td class="prop-default">'Search'</td><td>Label for the search submit button.</td></tr>
+          <tr><td class="prop-name">inputLabel</td><td class="prop-type">string</td><td class="prop-default">'Search properties'</td><td>Accessible <code>aria-label</code> / <code>sr-only</code> label for the input.</td></tr>
+          <tr><td class="prop-name">onSubmit</td><td class="prop-type">(value: string) =&gt; void</td><td class="prop-default">() =&gt; {}</td><td>Callback with the typed search string when the form is submitted.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Default usage</h3>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="t">&lt;LandingPage2</span> <span class="t">/&gt;</span></pre>
+    </div>
+
+    <h3>With custom props</h3>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="k">let</span> <span class="v">query</span> <span class="o">=</span> <span class="n">$state</span><span class="o">(</span><span class="s">''</span><span class="o">);</span>
+
+<span class="t">&lt;LandingPage2</span>
+  <span class="p">title</span><span class="o">=</span><span class="s">"Find Your Perfect Home"</span>
+  <span class="p">backgroundImage</span><span class="o">=</span><span class="s">"/hero-bg.jpg"</span>
+  <span class="p">placeholder</span><span class="o">=</span><span class="s">"Search by city, area, or ZIP"</span>
+  <span class="p">buttonText</span><span class="o">=</span><span class="s">"Search Homes"</span>
+  <span class="p">inputLabel</span><span class="o">=</span><span class="s">"Location"</span>
+  <span class="p">onSubmit</span><span class="o">={</span><span class="o">(</span><span class="v">val</span><span class="o">) =&gt; {</span> <span class="v">query</span> <span class="o">=</span> <span class="v">val</span><span class="o">; </span><span class="v">goto</span><span class="o">(</span><span class="s">`/search?q=</span><span class="o">${</span><span class="v">val</span><span class="o">}</span><span class="s">`</span><span class="o">); }}</span>
+<span class="t">/&gt;</span></pre>
+    </div>
+
+    <!-- ── LandingPage3 ── -->
+    <h2 id="lp3">LandingPage3</h2>
+
+    <div class="comp-header">
+      <div class="comp-icon" style="background:rgba(167,139,250,.12);">👤</div>
+      <div class="comp-meta">
+        <div class="comp-name">LandingPage3</div>
+        <div class="comp-desc">Centred two-column personal portfolio layout — bio text left, circular profile photo right, with Follow and Resume action buttons.</div>
+      </div>
+    </div>
+
+    <h3>Props</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prop-name">greeting</td><td class="prop-type">string</td><td class="prop-default">'Hi,'</td><td>Opening greeting shown in accent colour.</td></tr>
+          <tr><td class="prop-name">role</td><td class="prop-type">string</td><td class="prop-default">'I'm Full Stack Developer'</td><td>Job title / tagline next to the greeting.</td></tr>
+          <tr><td class="prop-name">description</td><td class="prop-type">string</td><td class="prop-default">Lorem ipsum…</td><td>Short bio paragraph.</td></tr>
+          <tr><td class="prop-name">image</td><td class="prop-type">string</td><td class="prop-default">Pexels URL</td><td>Circular profile photo URL.</td></tr>
+          <tr><td class="prop-name">imageAlt</td><td class="prop-type">string</td><td class="prop-default">'Profile photo'</td><td>Alt text for the profile image.</td></tr>
+          <tr><td class="prop-name">followText</td><td class="prop-type">string</td><td class="prop-default">'Follow'</td><td>Label for the primary (Follow) button.</td></tr>
+          <tr><td class="prop-name">resumeText</td><td class="prop-type">string</td><td class="prop-default">'Resume'</td><td>Label for the secondary (Resume) button.</td></tr>
+          <tr><td class="prop-name">FollowIcon</td><td class="prop-type">Component</td><td class="prop-default">Heart icon</td><td>Svelte component used as the Follow button icon.</td></tr>
+          <tr><td class="prop-name">ResumeIcon</td><td class="prop-type">Component</td><td class="prop-default">Download icon</td><td>Svelte component used as the Resume button icon.</td></tr>
+          <tr><td class="prop-name">onFollow</td><td class="prop-type">() =&gt; void</td><td class="prop-default">() =&gt; {}</td><td>Callback for the Follow button click.</td></tr>
+          <tr><td class="prop-name">onResume</td><td class="prop-type">() =&gt; void</td><td class="prop-default">() =&gt; {}</td><td>Callback for the Resume button click.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Default usage</h3>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="t">&lt;LandingPage3</span> <span class="t">/&gt;</span></pre>
+    </div>
+
+    <h3>With custom props</h3>
+    <div class="code-wrap">
+      <span class="code-label">template</span>
+      <pre><span class="k">import</span> <span class="o">{</span> <span class="v">LandingPage3</span> <span class="o">}</span> <span class="k">from</span> <span class="s">'@aryagg/svelte-layout-kit'</span><span class="o">;</span>
+<span class="k">import</span> <span class="o">{</span> <span class="v">Twitter</span><span class="o">,</span> <span class="v">FileEarmarkPdf</span> <span class="o">}</span> <span class="k">from</span> <span class="s">'svelte-bootstrap-icons'</span><span class="o">;</span>
+
+<span class="t">&lt;LandingPage3</span>
+  <span class="p">greeting</span><span class="o">=</span><span class="s">"Hello, I'm Arya"</span>
+  <span class="p">role</span><span class="o">=</span><span class="s">"Frontend Developer"</span>
+  <span class="p">description</span><span class="o">=</span><span class="s">"I build clean, modern interfaces with SvelteKit and Tailwind."</span>
+  <span class="p">image</span><span class="o">=</span><span class="s">"/avatar.jpg"</span>
+  <span class="p">followText</span><span class="o">=</span><span class="s">"Twitter"</span>
+  <span class="p">resumeText</span><span class="o">=</span><span class="s">"Download CV"</span>
+  <span class="p">FollowIcon</span><span class="o">={</span><span class="v">Twitter</span><span class="o">}</span>
+  <span class="p">ResumeIcon</span><span class="o">={</span><span class="v">FileEarmarkPdf</span><span class="o">}</span>
+  <span class="p">onFollow</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">window</span><span class="o">.</span><span class="v">open</span><span class="o">(</span><span class="s">'https://twitter.com/yourhandle'</span><span class="o">)}</span>
+  <span class="p">onResume</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">window</span><span class="o">.</span><span class="v">open</span><span class="o">(</span><span class="s">'/cv.pdf'</span><span class="o">)}</span>
+<span class="t">/&gt;</span></pre>
+    </div>
+
+    <!-- ── Theming ── -->
+    <h2 id="theming">Theming</h2>
+
+    <p>The components consume CSS custom properties from your app's theme. These must be defined in your global CSS (typically via your Tailwind theme config):</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>CSS Variable</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td class="prop-name">--semantic-accent</td><td>Highlighted words, accent buttons, greeting colour</td></tr>
+          <tr><td class="prop-name">--surface-secondary</td><td>LandingPage3 background fill</td></tr>
+          <tr><td class="prop-name">.btn-primary</td><td>Primary CTA and search buttons</td></tr>
+          <tr><td class="prop-name">.btn-secondary</td><td>Secondary action button (LandingPage3 Resume)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <p>These variables are already defined if you scaffolded your app from the <strong>sooper-dooper-app</strong> skeleton. No extra work needed.</p>
+    </div>
+
+    <!-- ── Full Example ── -->
+    <h2 id="full-example">Full Page Example</h2>
+
+    <p>A complete SvelteKit page that lets users switch between all three layouts with a mode toggle — exactly as used in <code>/test</code>:</p>
+
+    <div class="code-wrap">
+      <span class="code-label">src/routes/test/+page.svelte</span>
+      <pre><span class="k">&lt;script</span> <span class="p">lang</span><span class="o">=</span><span class="s">"ts"</span><span class="k">&gt;</span>
+  <span class="k">import</span> <span class="o">{</span> <span class="v">LandingPage1</span><span class="o">,</span> <span class="v">LandingPage2</span><span class="o">,</span> <span class="v">LandingPage3</span> <span class="o">}</span> <span class="k">from</span> <span class="s">'@aryagg/svelte-layout-kit'</span><span class="o">;</span>
+  <span class="k">import</span> <span class="v">Topbar</span> <span class="k">from</span> <span class="s">'$components/core/Topbar.svelte'</span><span class="o">;</span>
+
+  <span class="k">let</span> <span class="v">active</span> <span class="o">=</span> <span class="n">$state</span><span class="o">&lt;</span><span class="n">1</span> <span class="o">|</span> <span class="n">2</span> <span class="o">|</span> <span class="n">3</span><span class="o">&gt;(</span><span class="n">1</span><span class="o">);</span>
+  <span class="k">let</span> <span class="v">mode</span>   <span class="o">=</span> <span class="n">$state</span><span class="o">&lt;</span><span class="s">'default'</span> <span class="o">|</span> <span class="s">'props'</span><span class="o">&gt;(</span><span class="s">'props'</span><span class="o">);</span>
+<span class="k">&lt;/script&gt;</span>
+
+<span class="t">&lt;div</span> <span class="p">class</span><span class="o">=</span><span class="s">"flex h-screen flex-col overflow-hidden"</span><span class="t">&gt;</span>
+
+  <span class="c">&lt;!-- App topbar --&gt;</span>
+  <span class="t">&lt;Topbar</span> <span class="t">/&gt;</span>
+
+  <span class="c">&lt;!-- Layout switcher --&gt;</span>
+  <span class="t">&lt;div</span> <span class="p">class</span><span class="o">=</span><span class="s">"flex gap-2 border-b p-3"</span><span class="t">&gt;</span>
+    <span class="t">&lt;button</span> <span class="p">onclick</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">active</span> <span class="o">=</span> <span class="n">1</span><span class="o">}</span> <span class="p">class</span><span class="o">=</span><span class="s">"btn btn-sm btn-ghost"</span><span class="t">&gt;</span>Product<span class="t">&lt;/button&gt;</span>
+    <span class="t">&lt;button</span> <span class="p">onclick</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">active</span> <span class="o">=</span> <span class="n">2</span><span class="o">}</span> <span class="p">class</span><span class="o">=</span><span class="s">"btn btn-sm btn-ghost"</span><span class="t">&gt;</span>Real Estate<span class="t">&lt;/button&gt;</span>
+    <span class="t">&lt;button</span> <span class="p">onclick</span><span class="o">={</span><span class="o">() =&gt;</span> <span class="v">active</span> <span class="o">=</span> <span class="n">3</span><span class="o">}</span> <span class="p">class</span><span class="o">=</span><span class="s">"btn btn-sm btn-ghost"</span><span class="t">&gt;</span>Portfolio<span class="t">&lt;/button&gt;</span>
+  <span class="t">&lt;/div&gt;</span>
+
+  <span class="c">&lt;!-- Preview --&gt;</span>
+  <span class="t">&lt;div</span> <span class="p">class</span><span class="o">=</span><span class="s">"flex-1 overflow-y-auto"</span><span class="t">&gt;</span>
+    <span class="o">{#if</span> <span class="v">active</span> <span class="o">===</span> <span class="n">1</span><span class="o">}</span>
+      <span class="t">&lt;LandingPage1</span> <span class="p">title</span><span class="o">=</span><span class="s">"Nordic Home"</span> <span class="p">ctaText</span><span class="o">=</span><span class="s">"Shop Now"</span> <span class="t">/&gt;</span>
+    <span class="o">{:else if</span> <span class="v">active</span> <span class="o">===</span> <span class="n">2</span><span class="o">}</span>
+      <span class="t">&lt;LandingPage2</span> <span class="p">title</span><span class="o">=</span><span class="s">"Find Your Perfect Home"</span> <span class="t">/&gt;</span>
+    <span class="o">{:else}</span>
+      <span class="t">&lt;LandingPage3</span> <span class="p">greeting</span><span class="o">=</span><span class="s">"Hello, I'm Arya"</span> <span class="p">role</span><span class="o">=</span><span class="s">"Frontend Developer"</span> <span class="t">/&gt;</span>
+    <span class="o">{/if}</span>
+  <span class="t">&lt;/div&gt;</span>
+
+<span class="t">&lt;/div&gt;</span></pre>
+    </div>
+
+    <br />
+    <p style="color:var(--text-3); font-size:13px; border-top:1px solid var(--border); padding-top:24px;">
+      @aryagg/svelte-layout-kit · v0.0.1 · Built for SvelteKit 5 + Tailwind CSS v4
+    </p>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active sidebar link based on scroll position
+  const links = document.querySelectorAll('.sidebar a');
+  const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`.sidebar a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -75% 0px' });
+
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

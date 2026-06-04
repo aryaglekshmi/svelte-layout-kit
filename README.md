@@ -1,65 +1,76 @@
-# Svelte library
+# @aryagg/svelte-layout-kit
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+A Svelte 5 layout component library — sidebar, navbar, dashboard, and landing page blocks.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Install
 
 ```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+npm install @aryagg/svelte-layout-kit
 ```
 
-To recreate this project with the same configuration:
+## Local Development
 
 ```sh
-# recreate this project
-npx sv@0.15.3 create --template library --types ts --add prettier eslint --install npm svelte-layout-kit
+npm install
+npm run dev        # start dev server with live preview
 ```
 
-## Developing
+- Components live in [src/lib/](src/lib/)
+- The preview app lives in [src/routes/](src/routes/)
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+---
 
-```sh
-npm run dev
+## Publishing an Update to npm
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+> Do this every time you change the library and want to push a new version.
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+### Step 1 — Bump the version in `package.json`
 
-## Building
+Open [package.json](package.json) and increase the `"version"` field.
 
-To build your library:
+Follow [semver](https://semver.org/) rules:
 
-```sh
-npm pack
-```
+| Change type | Example | When to use |
+|---|---|---|
+| Bug fix | `0.0.1` → `0.0.2` | Small fix, nothing breaking |
+| New feature | `0.0.2` → `0.1.0` | Added something new |
+| Breaking change | `0.1.0` → `1.0.0` | Old code will stop working |
 
-To create a production version of your showcase app:
+### Step 2 — Build the library
 
 ```sh
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+This compiles everything in `src/lib/` into the `dist/` folder that npm will publish.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
+### Step 3 — Login to npm (first time only)
 
 ```sh
-npm publish
+npm login
+```
+
+Use your npm account. If you don't have one, create it at [npmjs.com](https://www.npmjs.com).
+
+### Step 4 — Publish
+
+```sh
+npm publish --access public
+```
+
+`--access public` is required because the package name starts with `@aryagg/` (a scoped package).
+
+### Done
+
+Your new version is live at:
+`https://www.npmjs.com/package/@aryagg/svelte-layout-kit`
+
+---
+
+## Quick Reference
+
+```sh
+npm run dev          # local preview
+npm run build        # compile lib → dist/
+npm publish --access public   # push to npm
 ```
