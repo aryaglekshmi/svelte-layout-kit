@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
+
 	let {
 		title = 'Greeny',
 		logo = 'https://image.flaticon.com/icons/svg/497/497348.svg',
@@ -11,7 +13,9 @@
 		ctaText = 'Learn More',
 		image = 'https://images.unsplash.com/photo-1536147116438-62679a5e01f2?auto=format&fit=crop&w=634&q=80',
 		imageAlt = 'Product showcase',
-		onCta
+		onCta,
+		lSnippet,
+		value = $bindable('Wooooooooooeeeeee')
 	}: {
 		title?: string;
 		logo?: string;
@@ -22,11 +26,18 @@
 		image?: string;
 		imageAlt?: string;
 		onCta?: (msg:string) => void;
+		lSnippet?: Snippet;
+		value?: string
 	} = $props();
 
 	const parts = $derived(highlight && heading.includes(highlight)
 		? heading.split(highlight)
 		: [heading, '']);
+
+		export function callFromOutside(ms:any) {
+			alert("Hello from outside the component!");
+			console.log("Received message:", ms);
+		}
 </script>
 
 <div class="flex flex-wrap">
@@ -48,7 +59,7 @@
 				<div class="w-full">
 					<h1 class="text-4xl lg:text-6xl font-bold">
 						{#if parts[1] !== ''}
-							{parts[0]}<span class="text-accent/85">{highlight}</span>{parts[1]}
+							{parts[0]}<span class="text-accent/85">{highlight}  <span class="text-amber-800">{value}</span></span>{parts[1]}
 						{:else}
 							{heading}
 						{/if}
@@ -57,6 +68,10 @@
 					<div class="w-20 h-2 bg-accent/70 my-4"></div>
 
 					<p class="text-xl mb-10">{description}</p>
+
+					{#if lSnippet}
+						{@render lSnippet()}
+					{/if}
 
 					<button type="button" class="btn btn-primary" onclick={()=>onCta?.("Hello from Landingpage-1!")}>
 						{ctaText}
